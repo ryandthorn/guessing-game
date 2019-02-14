@@ -1,4 +1,5 @@
 import React from 'react';
+import UserInput from './input-form.js'
 
 export default class Game extends React.Component {
   constructor(props) {
@@ -11,9 +12,7 @@ export default class Game extends React.Component {
     }
   }
 
-  onSubmit(event) {
-    event.preventDefault();
-    const guess = +this.numInput.value;
+  evaluateGuess(guess) {
     this.state.guesses.push(guess);
 
     if (guess === this.state.correctNumber) {
@@ -45,7 +44,7 @@ export default class Game extends React.Component {
     }
   }
 
-  onClick(event) {
+  restart(event) {
     event.preventDefault();
     this.setState({
       correctNumber: Math.floor(Math.random() * (100) + 1),
@@ -56,45 +55,35 @@ export default class Game extends React.Component {
   }
 
   render() {
-    if (!this.state.guesses.length) {
-      return (
-        <div className="wrapper">
-          <h1>Guess a number! {this.state.correctNumber}</h1>
-          <form onSubmit={e => this.onSubmit(e)}>
-            <input type="number" ref={input => this.numInput = input} />
-            <input type="submit" name="submit"
-              id="input--submit" value="Guess" />
-            <p>You're on guess #{this.state.guesses.length + 1}</p>
-            <ul id="ul--guess-list">{this.state.guesses.toString()}</ul>
-          </form>
-        </div>
-      )
-    }
-
     if (this.state.clue === `You guessed it!`) {
       return (
         <div className="wrapper">
           <h1>{this.state.clue}</h1>
           <h2>The number was {this.state.mostRecent}</h2>
-          <p>It took you {this.state.guesses.length + 1} guesses.</p>
+          <p>It took you {this.state.guesses.length} guesses.</p>
           <ul id="ul--guess-list">{this.state.guesses.toString()}</ul>
-          <button onClick={e => this.onClick(e)} type="button">New Game</button>
+          <button onClick={e => this.restart(e)} type="button">New Game</button>
+        </div>
+      )
+    }
+
+    if (!this.state.guesses.length) {
+      return (
+        <div className="wrapper">
+          <h1>Guess a number!</h1>
+          <UserInput onGuess={value => this.evaluateGuess(value)} />
         </div>
       )
     }
 
     return (
       <div className="wrapper">
-        <h1>Guess a number! {this.state.correctNumber}</h1>
-        <form onSubmit={e => this.onSubmit(e)}>
-          <input type="number" ref={input => this.numInput = input} />
-          <input type="submit" name="submit"
-            id="input--submit" value="Guess" />
-          <p>You're on guess #{this.state.guesses.length + 1}</p>
-          <p>Most recent guess: {this.state.mostRecent}</p>
-          <p>{this.state.clue}</p>
-          <ul id="ul--guess-list">{this.state.guesses.toString()}</ul>
-        </form>
+        <h1>Guess a number!</h1>
+        <UserInput onGuess={value => this.evaluateGuess(value)} />
+        <p>You're on guess #{this.state.guesses.length + 1}</p>
+        <p>Most recent guess: {this.state.mostRecent}</p>
+        <p>{this.state.clue}</p>
+        <ul id="ul--guess-list">{this.state.guesses.toString()}</ul>
       </div>
     )
   }
